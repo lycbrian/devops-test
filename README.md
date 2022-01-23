@@ -47,4 +47,7 @@ docker-compose.yml compose two components:
 `docker-compose up -d`
 
 ## Terraform 
-See terraform/README.md
+[README](https://github.com/lycbrian/devops-test/blob/main/terraform/README.md)
+
+## Kubernetes
+[README](https://github.com/lycbrian/devops-test/blob/main/k8s/README.md)
