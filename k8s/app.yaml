@@ -1,0 +1,30 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: app
+  namespace: statsd-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: app
+    spec:
+      serviceAccountName: statsd-admin
+      containers:
+      - name: app
+        image: asia-southeast1-docker.pkg.dev/xxxxx/my-repository/app-test:1.0
+        resources: {}
+        env:
+        - name: METRICS_BACKEND_HOST
+          value: "graphite-statsd"
+        - name: METRICS_BACKEND_PORT
+          value: "8125"
+      restartPolicy: Always
+status: {}

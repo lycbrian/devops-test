@@ -1,0 +1,76 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: graphite-statsd
+  namespace: statsd-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: graphite-statsd
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: graphite-statsd
+    spec:
+      serviceAccountName: statsd-admin
+      containers:
+      - name: graphite-statsd
+        image: graphiteapp/graphite-statsd:latest
+        resources: {}
+        volumeMounts:
+          - name: persistent-storage
+            mountPath: /opt/graphite/storage
+      volumes:
+        - name: persistent-storage
+          persistentVolumeClaim:
+            claimName: graphite-pvc
+      restartPolicy: Always
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: graphite-statsd
+  namespace: statsd-app
+spec:
+  ports:
+  - protocol: UDP
+    port: 8125
+    name: statsd
+  - protocol: TCP
+    port: 2003
+    name: carbon-receiver-plaintext
+  - protocol: TCP
+    port: 2004
+    name: carbon-receiver-pickle
+  - protocol: TCP    
+    port: 2023
+    name: carbon-aggregator-plaintext
+  - protocol: TCP    
+    port: 2024
+    name: carbon-aggregator-pickle
+  - protocol: TCP     
+    port: 8126
+    name: statsd-admin
+  selector:
+    app: graphite-statsd
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: statsd-http
+  namespace: statsd-app
+spec:
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    name: graphite-www
+  type: LoadBalancer  
+  selector:
+    app: graphite-statsd
